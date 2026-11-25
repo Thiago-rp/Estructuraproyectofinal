@@ -1,4 +1,4 @@
-# Planificador TransMilenio — Proyecto final de Estructuras de Datos y Algoritmos
+# Planeador de Transmilenio — Proyecto final de Estructuras de Datos y Algoritmos
 
 Es un motor en Python (carpeta `motor/`) que carga los tres CSV del profesor y responde consultas sobre la red de TransMilenio: estaciones, horarios, viajes y ranking. También permite editar la red, deshacer y rehacer, simular filas de abordaje y medir el rendimiento. La app (`app.py`) es una interfaz de consola que solo llama al motor.
 
