@@ -88,3 +88,12 @@ class IndiceHorarios:
         a = entrada[2]
         i = limite_inferior(a, minutos(hora))
         return formato(a[i]) if i < len(a) else None
+
+    def horarios(self, estacion, ruta):
+        """Minutos ordenados del par (vacío si no tiene). O(1) esperado."""
+        entrada = self._buscar(estacion, ruta)
+        return entrada[2] if entrada else []
+
+    def buses(self, estacion, ruta):
+        """Buses al día de esa ruta en esa estación. O(1) esperado."""
+        return len(self.horarios(estacion, ruta))

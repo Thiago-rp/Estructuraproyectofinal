@@ -37,3 +37,9 @@ class TablaHash:
             self._ampliar()
         self.cubetas[self._pos(clave)].append([clave, valor])
         self.cantidad += 1
+
+    def elementos(self):
+        """Recorre los pares (clave, valor). O(m + c), c = cubetas."""
+        for cubeta in self.cubetas:
+            for e in cubeta:
+                yield e[0], e[1]
