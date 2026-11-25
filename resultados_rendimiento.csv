@@ -1,0 +1,59 @@
+experimento,operacion,cota,tamano,microsegundos,factor_vs_anterior
+red,Carga de los 3 CSV,O(H log h),500,216318.4,
+red,R1 estado,O(1),500,3.815,
+red,R2 autocompletar k=5,O(log n + k),500,2.521,
+red,R3 rango k=4,O(log n + k),500,2.266,
+red,R4 próximo bus,O(log h + L),500,5.899,
+red,R5 viaje,O(R·L),500,387.702,
+red,R6 ranking k=10,O(n log k),500,1789.666,
+red,R7 recorrido,O(L),500,1.13,
+red,R7 agregar + deshacer,O(L),500,19.283,
+red,R7 quitar + deshacer,O(L),500,16.641,
+red,R8 cerrar + reabrir,O(log n),500,16.996,
+red,R9 deshacer + rehacer,O(log n),500,10.326,
+red,Carga de los 3 CSV,O(H log h),1000,410610.0,1.898
+red,R1 estado,O(1),1000,3.767,0.987
+red,R2 autocompletar k=5,O(log n + k),1000,2.617,1.038
+red,R3 rango k=4,O(log n + k),1000,2.209,0.975
+red,R4 próximo bus,O(log h + L),1000,5.778,0.979
+red,R5 viaje,O(R·L),1000,503.084,1.298
+red,R6 ranking k=10,O(n log k),1000,3556.903,1.987
+red,R7 recorrido,O(L),1000,1.133,1.003
+red,R7 agregar + deshacer,O(L),1000,19.341,1.003
+red,R7 quitar + deshacer,O(L),1000,16.543,0.994
+red,R8 cerrar + reabrir,O(log n),1000,15.972,0.94
+red,R9 deshacer + rehacer,O(log n),1000,9.411,0.911
+red,Carga de los 3 CSV,O(H log h),2000,813846.8,1.982
+red,R1 estado,O(1),2000,3.769,1.001
+red,R2 autocompletar k=5,O(log n + k),2000,2.588,0.989
+red,R3 rango k=4,O(log n + k),2000,2.291,1.037
+red,R4 próximo bus,O(log h + L),2000,5.716,0.989
+red,R5 viaje,O(R·L),2000,480.597,0.955
+red,R6 ranking k=10,O(n log k),2000,7131.269,2.005
+red,R7 recorrido,O(L),2000,1.161,1.025
+red,R7 agregar + deshacer,O(L),2000,19.599,1.013
+red,R7 quitar + deshacer,O(L),2000,16.809,1.016
+red,R8 cerrar + reabrir,O(log n),2000,17.239,1.079
+red,R9 deshacer + rehacer,O(log n),2000,10.876,1.156
+red,Carga de los 3 CSV,O(H log h),4000,1471214.4,1.808
+red,R1 estado,O(1),4000,3.698,0.981
+red,R2 autocompletar k=5,O(log n + k),4000,2.77,1.07
+red,R3 rango k=4,O(log n + k),4000,2.426,1.059
+red,R4 próximo bus,O(log h + L),4000,5.691,0.996
+red,R5 viaje,O(R·L),4000,407.37,0.848
+red,R6 ranking k=10,O(n log k),4000,14303.245,2.006
+red,R7 recorrido,O(L),4000,1.157,0.996
+red,R7 agregar + deshacer,O(L),4000,19.28,0.984
+red,R7 quitar + deshacer,O(L),4000,16.591,0.987
+red,R8 cerrar + reabrir,O(log n),4000,17.502,1.015
+red,R9 deshacer + rehacer,O(log n),4000,10.827,0.995
+h,R4 próximo bus,O(log h),1000,1.596,
+h,R4 próximo bus,O(log h),2000,1.661,1.04
+h,R4 próximo bus,O(log h),4000,1.739,1.047
+h,R4 próximo bus,O(log h),8000,1.767,1.016
+h,R4 próximo bus,O(log h),16000,1.828,1.034
+P,R10 simular fila,O(P + B),2000,689.02,
+P,R10 simular fila,O(P + B),4000,1398.36,2.029
+P,R10 simular fila,O(P + B),8000,2848.3,2.037
+P,R10 simular fila,O(P + B),16000,5686.28,1.996
+P,R10 simular fila,O(P + B),32000,11585.96,2.038
