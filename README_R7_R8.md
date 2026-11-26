@@ -26,7 +26,7 @@ Lista doblemente enlazada, tabla hash propia con encadenamiento, y el módulo `c
 - **Arreglo (lista de Python) por ruta:** insertar o quitar en medio obliga a desplazar elementos, y para recorrer al revés habría que invertirlo. Con la lista doblemente enlazada, enlazar y desenlazar un nodo ya localizado es O(1) y recorrer al revés es seguir `ant`.
 - **Lista simplemente enlazada:** no permite recorrer en sentido contrario ni desenlazar un nodo sin volver a buscar su anterior.
 - **Tabla hash de paradas dentro de cada ruta** para buscar en O(1): se descartó porque las rutas tienen entre 3 y 33 paradas, y mantener un índice por ruta con cada edición y cada deshacer agrega complejidad que no se justifica.
-- **Inventar horarios para una parada nueva:** se descartó porque todos los datos deben salir de los CSV. La parada nueva queda sin horarios en esa ruta, y `proximo_bus` para ese par devuelve `None`.
+- **Inventar horarios para una parada nueva:** se descartó porque todos los datos deben salir de los CSV. La parada nueva queda sin horarios en esa ruta, y `proximo_bus` para ese par devuelve `None`. Si se vuelve a agregar una estación que ya estaba en la ruta en `rutas.csv`, se recuperan sus horarios originales.
 
 ### Supuestos
 - `antes` y `despues` deben existir en la ruta y ser consecutivas, en ese orden.
@@ -92,14 +92,17 @@ Memoria: O(E).
 
 ## Integración con el resto del motor
 
-- **R9 (deshacer y rehacer):** guardar en las pilas los registros que devuelven `agregar_parada`, `quitar_parada`, `cerrar` y `reabrir`, y llamar a `revertir` o `rehacer` del objeto que los creó (`RedRutas` o `EstadoEstaciones`). Deshacer debe hacerse en orden inverso.
-- **R1, R2, R5 y R6:** consultar `EstadoEstaciones.abierta(nombre)` (o `puede_usar`) para que una estación cerrada no salga en búsquedas, autocompletar ni ranking, y no se use para subir, bajar ni transbordar en un viaje. Esa integración queda a cargo de cada punto.
-- **R4 (próximo bus):** un par ruta-estación que se quita en R7 ya no debería responder en `proximo_bus`, y una parada agregada queda sin horarios. Falta acordar cómo se refleja en `IndiceHorarios`.
-- **R11 (rendimiento):** los métodos de R7 y R8 pueden medirse con n y 2n. Después de cada edición medida hay que llamar a `revertir` para que la red conserve su tamaño.
+`motor/red.py` (`Red`) conecta R7 y R8 con el resto. La app y el panel solo llaman a `Red`.
+
+- **R9 (deshacer y rehacer):** `Red` guarda en las pilas de `motor/historial.py` cada registro que devuelven `agregar_parada`, `quitar_parada`, `cerrar` y `reabrir`. Deshacer y rehacer llaman a `revertir` o `rehacer` del objeto que creó el registro, en orden LIFO.
+- **R1, R2, R3, R5 y R6:** usan `EstadoEstaciones` y el AVL de abiertas. Una estación cerrada sale como cerrada en R1, no aparece en R2, R3 ni R6, y en R5 no se usa para subir, bajar ni transbordar.
+- **R4 y R6:** cuando una parada sale o entra a una ruta (también al deshacer o rehacer), `Red` actualiza `rutas_por_estacion` y `buses_por_estacion`, y `proximo_bus` responde `None` si la ruta ya no para en esa estación.
+- **R11:** `rendimiento.py` mide agregar, quitar, cerrar y reabrir junto con su inverso, para que la red no cambie de tamaño.
 
 ### Ejemplo de uso
 
 ```python
+# Uso directo de las clases de R7 y R8 (en la app todo pasa por motor.Red)
 from motor.edicion import RedRutas
 from motor.estados import EstadoEstaciones
 from motor.rangos import IndiceRangos
