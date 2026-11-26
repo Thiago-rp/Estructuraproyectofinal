@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TransMilenio · Planificador</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --surface: #ffffff;
+            --surface-soft: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --brand: #dc2626;
+            --brand-hover: #b91c1c;
+            --brand-soft: #fef2f2;
+            --ok: #16a34a;
+            --ok-soft: #f0fdf4;
+            --warn: #d97706;
+            --warn-soft: #fffbeb;
+            --shadow: 0 10px 30px -12px rgba(15, 23, 42, 0.08);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--brand);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+
+        button:hover {
+            background: var(--surface-soft);
+            border-color: #cbd5e1;
+        }
+
+        button.primary {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+            width: 100%;
+            padding: 11px 16px;
+            font-size: 14px;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.22);
+        }
+
+        button.primary:hover {
+            background: var(--brand-hover);
+        }
+
+        .layout {
+            max-width: 1280px;
+            margin: 24px auto;
+            padding: 0 20px 32px;
+            display: grid;
+            grid-template-columns: 390px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: visible;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-soft);
+            padding: 6px;
+            gap: 4px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 6px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            color: var(--muted);
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--brand);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        .panel {
+            padding: 20px;
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        h2 {
+            margin: 0 0 4px;
+            font-size: 18px;
+            letter-spacing: -0.02em;
+        }
+
+        .desc {
+            margin: 0 0 18px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .field {
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        }
+
+        /* Autocompletado personalizado (R2) */
+        .ac-wrap {
+            position: relative;
+        }
+
+        .ac-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 14px 30px -8px rgba(15, 23, 42, 0.16);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 40;
+            display: none;
+            padding: 4px;
+        }
+
+        .ac-menu.open {
+            display: block;
+        }
+
+        .ac-item {
+            padding: 9px 11px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--text);
+        }
+
+        .ac-item:hover,
+        .ac-item.active {
+            background: var(--brand-soft);
+            color: var(--brand);
+            font-weight: 600;
+        }
+
+        .ac-tag {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: var(--ok-soft);
+            color: var(--ok);
+        }
+
+        .ac-tag.closed {
+            background: var(--surface-soft);
+            color: var(--muted);
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .result-box {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        .pill.ok { background: var(--ok-soft); color: var(--ok); }
+        .pill.closed { background: var(--brand-soft); color: var(--brand); }
+        .pill.warn { background: var(--warn-soft); color: var(--warn); }
+
+        .tramo-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 8px;
+        }
+
+        .tramo-ruta {
+            font-weight: 700;
+            color: var(--brand);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 18px 0;
+        }
+
+        /* Panel derecho limpio: resultados bajo demanda */
+        .stage-card {
+            padding: 22px;
+            min-height: 460px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stage-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .search-bar input {
+            padding-left: 14px;
+            padding-right: 76px;
+            font-size: 14.5px;
+            background: #fcfdff;
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+
+        .empty-stage {
+            flex: 1;
+            border: 1.5px dashed var(--border);
+            border-radius: 14px;
+            background: #fafbfd;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--muted);
+        }
+
+        .empty-stage strong {
+            display: block;
+            color: var(--text);
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 12px;
+        }
+
+        .station-chip {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: left;
+        }
+
+        .station-chip:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+        }
+
+        .station-chip.highlighted {
+            border-color: var(--brand);
+            background: var(--brand-soft);
+        }
+
+        .station-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot.open { background: var(--ok); }
+        .dot.closed { background: #94a3b8; }
+        .dot.active { background: var(--brand); }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text);
+            color: #fff;
+            padding: 11px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="brand-box">
+        <div class="logo-badge">T</div>
+        <div>
+            <div class="brand-title">TransMilenio</div>
+            <div class="brand-sub" id="resumen-red">Cargando estaciones...</div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button onclick="accionHistorial('deshacer')">↩ Deshacer</button>
+        <button onclick="accionHistorial('rehacer')">↪ Rehacer</button>
+    </div>
+</header>
+
+<main class="layout">
+    <section class="card">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="viaje" onclick="cambiarTab('viaje')">Viaje</button>
+            <button class="tab-btn" data-tab="estaciones" onclick="cambiarTab('estaciones')">Estaciones</button>
+            <button class="tab-btn" data-tab="operar" onclick="cambiarTab('operar')">Operar</button>
+            <button class="tab-btn" data-tab="pico" onclick="cambiarTab('pico')">Hora pico</button>
+        </div>
+
+        <!-- TAB 1: VIAJE -->
+        <div class="panel active" id="panel-viaje">
+            <h2>Planificar viaje</h2>
+            <p class="desc">Busca la mejor conexión directa o con un transbordo.</p>
+
+            <div class="field">
+                <label for="viaje-origen">Origen</label>
+                <div class="ac-wrap">
+                    <input id="viaje-origen" autocomplete="off" placeholder="Ej. PORTAL NORTE" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label for="viaje-destino">Destino</label>
+                <div class="ac-wrap">
+                    <input id="viaje-destino" autocomplete="off" placeholder="Ej. RICAURTE" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <button class="primary" onclick="buscarViaje()">Calcular ruta</button>
+            <div class="result-box" id="viaje-resultado">Ingresa un origen y un destino para ver el recorrido.</div>
+        </div>
+
+        <!-- TAB 2: ESTACIONES (R1, R2, R3, R6) -->
+        <div class="panel" id="panel-estaciones">
+            <h2>Estado y consultas</h2>
+            <p class="desc">Consulta estaciones, rangos y ranking.</p>
+
+            <div class="field">
+                <label for="est-nombre">Nombre de la estación</label>
+                <div class="ac-wrap">
+                    <input id="est-nombre" autocomplete="off" placeholder="Ej. CALLE 80" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <button onclick="consultarEstacion()" style="width:100%">Consultar estado</button>
+            <div class="result-box" id="est-resultado">Sin consulta aún.</div>
+
+            <div class="divider"></div>
+
+            <label>Estaciones en un rango</label>
+            <div class="row-2 field">
+                <div class="ac-wrap">
+                    <input id="rango-desde" autocomplete="off" value="CALLE 26" placeholder="Desde" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+                <div class="ac-wrap">
+                    <input id="rango-hasta" autocomplete="off" value="CALLE 80" placeholder="Hasta" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <button onclick="consultarRango()" style="width:100%">Ver rango</button>
+            <div class="result-box" id="rango-resultado">—</div>
+
+            <div class="divider"></div>
+
+            <label>Estaciones con más buses</label>
+            <div class="row-2 field">
+                <input id="ranking-top" type="number" min="1" max="50" value="8" />
+                <button onclick="consultarRanking()">Ver ranking</button>
+            </div>
+            <div class="result-box" id="ranking-resultado">—</div>
+        </div>
+
+        <!-- TAB 3: OPERAR (R7, R8) -->
+        <div class="panel" id="panel-operar">
+            <h2>Operación de estaciones</h2>
+            <p class="desc">Cierra o reabre estaciones y edita paradas de una ruta.</p>
+
+            <div class="field">
+                <label for="op-estacion">Estación</label>
+                <div class="ac-wrap">
+                    <input id="op-estacion" autocomplete="off" placeholder="Ej. HÉROES" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <div class="row-2 field">
+                <button onclick="cambiarEstadoEstacion(false)">Cerrar estación</button>
+                <button onclick="cambiarEstadoEstacion(true)">Reabrir estación</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <label>Editar parada en ruta</label>
+            <div class="field">
+                <input id="parada-ruta" placeholder="Ruta (ej. 1-3)" />
+            </div>
+            <div class="row-2 field">
+                <div class="ac-wrap">
+                    <input id="parada-antes" autocomplete="off" placeholder="Parada anterior" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+                <div class="ac-wrap">
+                    <input id="parada-despues" autocomplete="off" placeholder="Parada siguiente" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ac-wrap">
+                    <input id="parada-nueva" autocomplete="off" placeholder="Estación nueva (para agregar)" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <div class="row-2">
+                <button onclick="agregarParada()">+ Agregar</button>
+                <button onclick="quitarParada()">− Quitar nueva</button>
+            </div>
+            <div class="result-box" id="op-resultado">Listo para operar.</div>
+        </div>
+
+        <!-- TAB 4: HORA PICO (R4, R10) -->
+        <div class="panel" id="panel-pico">
+            <h2>Próximo bus y hora pico</h2>
+            <p class="desc">Consulta llegadas y simula filas en hora pico.</p>
+
+            <div class="field">
+                <label for="pico-estacion">Estación</label>
+                <div class="ac-wrap">
+                    <input id="pico-estacion" autocomplete="off" value="PORTAL NORTE" data-ac="estacion" />
+                    <div class="ac-menu"></div>
+                </div>
+            </div>
+            <div class="row-2 field">
+                <div>
+                    <label for="pico-ruta">Ruta (opcional)</label>
+                    <input id="pico-ruta" placeholder="Ej. B10 o vacío" />
+                </div>
+                <div>
+                    <label for="pico-hora">Hora (HH:MM)</label>
+                    <input id="pico-hora" value="07:00" />
+                </div>
+            </div>
+            <button onclick="consultarProximoBus()" style="width:100%; margin-bottom:14px;">Ver próximo bus</button>
+
+            <div class="row-2 field">
+                <div>
+                    <label for="pico-desde">Desde</label>
+                    <input id="pico-desde" value="06:00" />
+                </div>
+                <div>
+                    <label for="pico-hasta">Hasta</label>
+                    <input id="pico-hasta" value="08:00" />
+                </div>
+            </div>
+            <div class="row-2 field">
+                <div>
+                    <label for="pico-tasa">Llegadas / min</label>
+                    <input id="pico-tasa" type="number" step="0.5" value="8" />
+                </div>
+                <div>
+                    <label for="pico-cupo">Cupo bus</label>
+                    <input id="pico-cupo" type="number" value="80" />
+                </div>
+            </div>
+            <button class="primary" onclick="simularHoraPico()">Simular fila</button>
+            <div class="result-box" id="pico-resultado">Sin simulación aún.</div>
+        </div>
+    </section>
+
+    <!-- VISTA LIMPIA: SOLO LO QUE BUSCAS O TU VIAJE -->
+    <section class="card stage-card">
+        <div class="stage-top">
+            <div>
+                <h2 id="stage-titulo" style="margin:0;">Explorador de estaciones</h2>
+                <p class="desc" id="stage-sub" style="margin:2px 0 0;">Escribe para ver coincidencias con su estado actual.</p>
+            </div>
+            <span class="pill ok" id="stage-contador" style="display:none;">0</span>
+        </div>
+
+        <div class="search-bar">
+            <input
+                    id="buscador-vista"
+                    autocomplete="off"
+                    placeholder="Buscar estación (ej. calle 80, portal, héroes)..."
+                    oninput="alBuscarEnVista()"
+            />
+            <button class="clear-btn" onclick="limpiarVista()">Limpiar</button>
+        </div>
+
+        <div id="contenedor-vista" class="empty-stage">
+            <div>
+                <strong>Vista despejada</strong>
+                <span>Busca una estación arriba o calcula un viaje para ver aquí solo las estaciones relevantes con su estado.</span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    let estacionesData = [];
+    let estacionesViaje = [];
+    let modoVista = 'vacio';
+
+    function mostrarToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    function cambiarTab(tab) {
+        cerrarTodosMenusAC();
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    function actualizarResumen(resumen) {
+        if (!resumen) return;
+        document.getElementById('resumen-red').textContent =
+            `${resumen.total_estaciones} estaciones · ${resumen.estaciones_abiertas} abiertas · ${resumen.total_rutas} rutas`;
+    }
+
+    function estadoDe(nombre) {
+        const found = estacionesData.find(e => e.nombre === nombre);
+        return found ? found.abierta : true;
+    }
+
+    /* ============================================================
+       AUTOCOMPLETADO INTELIGENTE (R2 + respaldo local instantáneo)
+       ============================================================ */
+    function cerrarTodosMenusAC() {
+        document.querySelectorAll('.ac-menu.open').forEach(m => {
+            m.classList.remove('open');
+            m.dataset.idx = '-1';
+        });
+    }
+
+    async function obtenerSugerencias(query) {
+        const q = (query || '').trim();
+        try {
+            const res = await fetch(`/api/autocompletar?q=${encodeURIComponent(q)}&limite=8`);
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data.sugerencias) && data.sugerencias.length > 0) {
+                    return data.sugerencias;
+                }
+            }
+        } catch (_) {}
+
+        // Respaldo por si el prefijo coincide en medio del nombre (ej. "80" -> "CALLE 80")
+        const lower = q.toLowerCase();
+        return estacionesData
+            .filter(e => !lower || e.nombre.toLowerCase().includes(lower))
+            .slice(0, 8)
+            .map(e => e.nombre);
+    }
+
+    function inicializarAutocompletado() {
+        document.querySelectorAll('input[data-ac="estacion"]').forEach(input => {
+            const menu = input.parentElement.querySelector('.ac-menu');
+            if (!menu) return;
+            let debounceTimer = null;
+
+            const pintarOpciones = (lista) => {
+                menu.dataset.idx = '-1';
+                if (!lista.length) {
+                    menu.classList.remove('open');
+                    menu.innerHTML = '';
+                    return;
+                }
+                menu.innerHTML = lista.map((nombre, idx) => {
+                    const abierta = estadoDe(nombre);
+                    return `
+              <div class="ac-item" data-index="${idx}" data-val="${nombre.replace(/"/g, '&quot;')}">
+                <span>${nombre}</span>
+                <span class="ac-tag ${abierta ? '' : 'closed'}">${abierta ? 'Abierta' : 'Cerrada'}</span>
+              </div>
+            `;
+                }).join('');
+                menu.classList.add('open');
+
+                menu.querySelectorAll('.ac-item').forEach(item => {
+                    item.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        input.value = item.dataset.val;
+                        cerrarTodosMenusAC();
+                        input.dispatchEvent(new Event('change'));
+                    });
+                });
+            };
+
+            const dispararBusqueda = () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const sugerencias = await obtenerSugerencias(input.value);
+                    if (document.activeElement === input) {
+                        pintarOpciones(sugerencias);
+                    }
+                }, 90);
+            };
+
+            input.addEventListener('focus', dispararBusqueda);
+            input.addEventListener('input', dispararBusqueda);
+            input.addEventListener('blur', () => setTimeout(cerrarTodosMenusAC, 130));
+
+            input.addEventListener('keydown', (e) => {
+                const items = menu.querySelectorAll('.ac-item');
+                if (!menu.classList.contains('open') || !items.length) return;
+                let idx = parseInt(menu.dataset.idx || '-1', 10);
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    idx = (idx + 1) % items.length;
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    idx = (idx - 1 + items.length) % items.length;
+                } else if (e.key === 'Enter' && idx >= 0) {
+                    e.preventDefault();
+                    input.value = items[idx].dataset.val;
+                    cerrarTodosMenusAC();
+                    return;
+                } else if (e.key === 'Escape') {
+                    cerrarTodosMenusAC();
+                    return;
+                } else {
+                    return;
+                }
+
+                menu.dataset.idx = String(idx);
+                items.forEach((el, i) => el.classList.toggle('active', i === idx));
+                items[idx].scrollIntoView({ block: 'nearest' });
+            });
+        });
+    }
+
+    /* ============================================================
+       VISTA DERECHA DESPEJADA (SOLO LO BUSCADO O EL VIAJE)
+       ============================================================ */
+    function limpiarVista() {
+        document.getElementById('buscador-vista').value = '';
+        estacionesViaje = [];
+        modoVista = 'vacio';
+        renderVista();
+    }
+
+    function alBuscarEnVista() {
+        const q = document.getElementById('buscador-vista').value.trim();
+        if (!q) {
+            modoVista = estacionesViaje.length ? 'viaje' : 'vacio';
+        } else {
+            modoVista = 'busqueda';
+        }
+        renderVista();
+    }
+
+    function renderVista() {
+        const cont = document.getElementById('contenedor-vista');
+        const titulo = document.getElementById('stage-titulo');
+        const sub = document.getElementById('stage-sub');
+        const contador = document.getElementById('stage-contador');
+        const q = document.getElementById('buscador-vista').value.trim().toLowerCase();
+
+        if (modoVista === 'vacio') {
+            cont.className = 'empty-stage';
+            contador.style.display = 'none';
+            titulo.textContent = 'Explorador de estaciones';
+            sub.textContent = 'Escribe para ver coincidencias con su estado actual.';
+            cont.innerHTML = `
+          <div>
+            <strong>Vista despejada</strong>
+            <span>Busca una estación arriba o calcula un viaje para ver aquí solo las estaciones relevantes con su estado.</span>
+          </div>
+        `;
+            return;
+        }
+
+        let items = [];
+        if (modoVista === 'busqueda') {
+            items = estacionesData
+                .filter(e => e.nombre.toLowerCase().includes(q))
+                .slice(0, 24)
+                .map(e => ({ nombre: e.nombre, abierta: e.abierta, enViaje: false }));
+            titulo.textContent = 'Resultados de búsqueda';
+            sub.textContent = `Mostrando coincidencias para "${document.getElementById('buscador-vista').value.trim()}"`;
+        } else if (modoVista === 'viaje') {
+            items = estacionesViaje.map(nombre => ({
+                nombre,
+                abierta: estadoDe(nombre),
+                enViaje: true
+            }));
+            titulo.textContent = 'Estaciones del trayecto';
+            sub.textContent = 'Orden de estaciones en tu viaje y su estado operativo.';
+        }
+
+        contador.style.display = 'inline-flex';
+        contador.textContent = `${items.length}`;
+
+        if (!items.length) {
+            cont.className = 'empty-stage';
+            cont.innerHTML = `
+          <div>
+            <strong>Sin coincidencias</strong>
+            <span>No encontramos estaciones con ese filtro.</span>
+          </div>
+        `;
+            return;
+        }
+
+        cont.className = 'stations-grid';
+        cont.innerHTML = items.map(est => {
+            const dotClass = est.enViaje ? 'active' : (est.abierta ? 'open' : 'closed');
+            const badgeClass = est.abierta ? 'ok' : 'closed';
+            const estadoTexto = est.abierta ? 'ABIERTA' : 'CERRADA';
+            return `
+          <div class="station-chip ${est.enViaje ? 'highlighted' : ''}" onclick="seleccionarEstacion('${est.nombre.replace(/'/g, "\\'")}')">
+            <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+              <span class="dot ${dotClass}"></span>
+              <span class="station-name">${est.nombre}</span>
+            </div>
+            <span class="pill ${badgeClass}">${estadoTexto}</span>
+          </div>
+        `;
+        }).join('');
+    }
+
+    function seleccionarEstacion(nombre) {
+        document.getElementById('est-nombre').value = nombre;
+        document.getElementById('op-estacion').value = nombre;
+        document.getElementById('pico-estacion').value = nombre;
+        cambiarTab('estaciones');
+        consultarEstacion();
+    }
+
+    async function cargarRed() {
+        const res = await fetch('/api/estado-red');
+        const data = await res.json();
+        estacionesData = data.estaciones || [];
+        actualizarResumen(data.resumen);
+        renderVista();
+    }
+
+    async function buscarViaje() {
+        const origen = document.getElementById('viaje-origen').value.trim();
+        const destino = document.getElementById('viaje-destino').value.trim();
+        const box = document.getElementById('viaje-resultado');
+        if (!origen || !destino) {
+            box.innerHTML = 'Completa el origen y el destino.';
+            return;
+        }
+        const res = await fetch(`/api/viaje?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}`);
+        const data = await res.json();
+
+        if (!data.encontrado) {
+            estacionesViaje = [];
+            modoVista = 'vacio';
+            renderVista();
+            box.innerHTML = `<span class="pill closed">Sin ruta</span><p style="margin:8px 0 0;">${data.mensaje}</p>`;
+            return;
+        }
+
+        estacionesViaje = data.estaciones_recorrido || [];
+        document.getElementById('buscador-vista').value = '';
+        modoVista = 'viaje';
+        renderVista();
+
+        const badge = data.directo
+            ? `<span class="pill ok">Viaje directo</span>`
+            : `<span class="pill warn">1 transbordo · ${data.transbordo}</span>`;
+
+        const tramosHtml = data.tramos.map((t, i) => `
+        <div class="tramo-item">
+          <div><strong>${i + 1}.</strong> Ruta <span class="tramo-ruta">${t.ruta}</span> · Sube en <strong>${t.sube}</strong> → Baja en <strong>${t.baja}</strong> (${t.paradas} paradas)</div>
+          <div style="color:var(--muted); font-size:12px; margin-top:4px;">${t.estaciones.join(' → ')}</div>
+        </div>
+      `).join('');
+
+        box.innerHTML = `${badge} <strong>${data.paradas} paradas en total</strong>${tramosHtml}`;
+    }
+
+    async function consultarEstacion() {
+        const nombre = document.getElementById('est-nombre').value.trim();
+        const box = document.getElementById('est-resultado');
+        if (!nombre) return;
+
+        document.getElementById('buscador-vista').value = nombre;
+        modoVista = 'busqueda';
+        renderVista();
+
+        const res = await fetch(`/api/estacion?nombre=${encodeURIComponent(nombre)}`);
+        const data = await res.json();
+        if (!data.existe) {
+            const sug = (data.sugerencias || []).join(', ');
+            box.innerHTML = `No existe la estación.${sug ? `<br><small>¿Quisiste decir?: ${sug}</small>` : ''}`;
+            return;
+        }
+        const estadoBadge = data.abierta
+            ? `<span class="pill ok">ABIERTA</span>`
+            : `<span class="pill closed">CERRADA</span>`;
+        const rutasTxt = (data.rutas || []).length ? data.rutas.join(', ') : 'Sin rutas asignadas';
+        box.innerHTML = `<strong>${data.nombre}</strong> ${estadoBadge}<br><small style="color:var(--muted)">Rutas: ${rutasTxt}</small>`;
+    }
+
+    async function consultarRango() {
+        const desde = document.getElementById('rango-desde').value.trim();
+        const hasta = document.getElementById('rango-hasta').value.trim();
+        const res = await fetch(`/api/rango?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`);
+        const data = await res.json();
+        const arr = data.estaciones || [];
+        estacionesViaje = arr;
+        document.getElementById('buscador-vista').value = '';
+        modoVista = 'viaje';
+        renderVista();
+        document.getElementById('rango-resultado').innerHTML =
+            `<strong>${arr.length} estaciones:</strong> ${arr.length ? arr.join(' · ') : 'Ninguna'}`;
+    }
+
+    async function consultarRanking() {
+        const top = document.getElementById('ranking-top').value || 8;
+        const res = await fetch(`/api/ranking?top=${encodeURIComponent(top)}`);
+        const data = await res.json();
+        const filas = (data.ranking || []).map((r, i) =>
+            `<div><strong>${i + 1}.</strong> ${r.nombre} — <span style="color:var(--muted)">${r.buses} buses/día</span></div>`
+        ).join('');
+        document.getElementById('ranking-resultado').innerHTML = filas || 'Sin datos.';
+    }
+
+    async function cambiarEstadoEstacion(abierta) {
+        const nombre = document.getElementById('op-estacion').value.trim();
+        if (!nombre) return;
+        const res = await fetch('/api/estacion/estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, abierta })
+        });
+        const data = await res.json();
+        if (data.ok) {
+            estacionesData = data.estaciones;
+            actualizarResumen(data.resumen);
+            renderVista();
+            document.getElementById('op-resultado').textContent = `${nombre} ahora está ${abierta ? 'ABIERTA' : 'CERRADA'}.`;
+            mostrarToast(abierta ? 'Estación reabierta' : 'Estación cerrada');
+        }
+    }
+
+    async function agregarParada() {
+        const payload = {
+            ruta: document.getElementById('parada-ruta').value,
+            antes: document.getElementById('parada-antes').value,
+            despues: document.getElementById('parada-despues').value,
+            nueva: document.getElementById('parada-nueva').value,
+        };
+        const res = await fetch('/api/parada/agregar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+            estacionesData = data.estaciones;
+            actualizarResumen(data.resumen);
+            renderVista();
+            document.getElementById('op-resultado').textContent = `Parada "${payload.nueva}" agregada.`;
+            mostrarToast('Parada agregada');
+        }
+    }
+
+    async function quitarParada() {
+        const payload = {
+            ruta: document.getElementById('parada-ruta').value,
+            estacion: document.getElementById('parada-nueva').value,
+        };
+        const res = await fetch('/api/parada/quitar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+            estacionesData = data.estaciones;
+            actualizarResumen(data.resumen);
+            renderVista();
+            document.getElementById('op-resultado').textContent = `Parada "${payload.estacion}" quitada.`;
+            mostrarToast('Parada quitada');
+        }
+    }
+
+    async function accionHistorial(tipo) {
+        const res = await fetch(`/api/historial/${tipo}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+            estacionesData = data.estaciones;
+            actualizarResumen(data.resumen);
+            renderVista();
+            mostrarToast(data.hecho ? `${tipo[0].toUpperCase() + tipo.slice(1)}: ${data.hecho}` : 'Nada por cambiar');
+        }
+    }
+
+    async function consultarProximoBus() {
+        const estacion = document.getElementById('pico-estacion').value.trim();
+        const ruta = document.getElementById('pico-ruta').value.trim();
+        const hora = document.getElementById('pico-hora').value.trim();
+        const res = await fetch(`/api/proximo-bus?estacion=${encodeURIComponent(estacion)}&ruta=${encodeURIComponent(ruta)}&hora=${encodeURIComponent(hora)}`);
+        const data = await res.json();
+        const disp = (data.rutas_disponibles || []).slice(0, 10).join(', ');
+        document.getElementById('pico-resultado').innerHTML = data.llegada
+            ? `Próximo bus de <strong>${ruta.toUpperCase()}</strong> en <strong>${estacion}</strong>: <strong>${data.llegada}</strong>`
+            : `No hay más buses en ese horario o ruta.<br><small style="color:var(--muted)">Rutas ahí: ${disp || 'ninguna'}</small>`;
+    }
+
+    async function simularHoraPico() {
+        const payload = {
+            estacion: document.getElementById('pico-estacion').value,
+            ruta: document.getElementById('pico-ruta').value,
+            desde: document.getElementById('pico-desde').value,
+            hasta: document.getElementById('pico-hasta').value,
+            tasa: document.getElementById('pico-tasa').value,
+            cupo: document.getElementById('pico-cupo').value,
+        };
+        const res = await fetch('/api/simulacion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const r = await res.json();
+        const busesHtml = (r.buses || []).map(b =>
+            `<div>${b.hora} · suben <strong>${b.suben}</strong> · quedan en fila <strong>${b.quedan}</strong></div>`
+        ).join('');
+        document.getElementById('pico-resultado').innerHTML = `
+        <div><strong>Buses:</strong> ${r.total_buses} · <strong>Llegaron:</strong> ${r.pasajeros} · <strong>Abordaron:</strong> ${r.abordaron}</div>
+        <div style="margin-top:4px;"><strong>Espera prom.:</strong> ${r.espera_promedio} min · <strong>Máx:</strong> ${r.espera_maxima} min · <strong>Fila máx:</strong> ${r.fila_maxima}</div>
+        <div class="divider" style="margin:10px 0;"></div>
+        ${busesHtml}
+      `;
+    }
+
+    inicializarAutocompletado();
+    cargarRed();
+</script>
+</body>
+</html>
