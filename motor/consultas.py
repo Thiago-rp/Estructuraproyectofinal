@@ -34,9 +34,37 @@ def _prefijo(nodo, prefijo, k, salida):
 
 
 def autocompletar(indice, prefijo, k):
-    """R2: hasta k estaciones abiertas que empiezan por `prefijo`, en orden
-    alfabético. O(log n + k), n = estaciones abiertas."""
+    """R2: hasta k estaciones abiertas que empiezan por `prefijo`, ordenadas numéricamente."""
     salida = []
     if k > 0:
         _prefijo(indice.raiz, normalizar(prefijo), k, salida)
+    
+    # --- FUNCIÓN AUXILIAR PARA ORDEN NUMÉRICO (para que 19 vaya antes de 100) ---
+    def obtener_clave_orden(nombre):
+        partes = nombre.split()
+        texto_base = ""
+        numero = 0
+        encontro_numero = False
+        for parte in partes:
+            es_digito = True
+            for c in parte:
+                if c < '0' or c > '9':
+                    es_digito = False
+                    break
+            if es_digito and len(parte) > 0:
+                numero = int(parte)
+                encontro_numero = True
+                break
+            else:
+                texto_base += parte + " "
+        return (texto_base.strip(), numero) if encontro_numero else (nombre, 0)
+
+    # Ordenamiento de burbuja sobre la lista resultante para asegurar orden numérico correcto
+    n = len(salida)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if obtener_clave_orden(salida[j]) > obtener_clave_orden(salida[j + 1]):
+                salida[j], salida[j + 1] = salida[j + 1], salida[j]
+
+    return salida[:k]raiz, normalizar(prefijo), k, salida)
     return salida
