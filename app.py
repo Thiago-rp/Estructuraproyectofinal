@@ -32,7 +32,11 @@ MENU = """
 
 def pedir(texto, defecto=None):
     valor = input(f'{texto}{f" [{defecto}]" if defecto else ""}: ').strip()
-    return valor if valor else defecto
+    if valor:
+        return valor
+    if defecto is None:
+        raise ValueError('Este campo es obligatorio')
+    return defecto
 
 
 def pedir_entero(texto, defecto):
@@ -41,6 +45,14 @@ def pedir_entero(texto, defecto):
         return int(valor)
     except (TypeError, ValueError):
         raise ValueError(f'"{valor}" no es un número entero')
+
+
+def pedir_numero(texto, defecto):
+    valor = pedir(texto, defecto)
+    try:
+        return float(valor)
+    except (TypeError, ValueError):
+        raise ValueError(f'"{valor}" no es un número')
 
 
 def paradas(n):
@@ -175,7 +187,7 @@ def r10(red):
         intervalo = pedir_entero('Cada cuántos minutos sale un bus', 5)
     desde = pedir('Desde (HH:MM)', '06:00')
     hasta = pedir('Hasta (HH:MM)', '08:00')
-    tasa = float(pedir('Pasajeros que llegan por minuto (promedio)', '8'))
+    tasa = pedir_numero('Pasajeros que llegan por minuto (promedio)', '8')
     cupo = pedir_entero('Cupo de cada bus', 80)
     r = red.simular_fila(estacion, ruta, desde, hasta, tasa, cupo, intervalo)
     print(f'  Buses: {len(r.buses)} | Llegaron: {r.pasajeros} | Abordaron: {r.abordaron} '
@@ -212,10 +224,12 @@ def main():
             continue
         try:
             accion(red)
-        except ValueError as e:
-            print(f'  Error: {e}')
         except (EOFError, KeyboardInterrupt):
             break
+        except ValueError as e:
+            print(f'  Error: {e}')
+        except Exception as e:      # la app nunca debe cerrarse por una entrada rara
+            print(f'  Error inesperado: {e}')
 
 
 if __name__ == '__main__':

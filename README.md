@@ -35,9 +35,9 @@ app.py                 interfaz de consola
 rendimiento.py         panel de rendimiento R11 (todo el motor)
 rendimiento_r3_r4.py   mediciones detalladas de R3 y R4
 pruebas/               pruebas unitarias por requisito
+README_R3_R4.md        detalle de R3 y R4
+README_R7_R8.md        detalle de R7 y R8
 ```
-
-> La carpeta `TransmilenioPlanner/` tiene la primera versión de R1 y R2 (búsqueda lineal y burbuja) y una copia de los datos. El motor ya no la usa: R1 y R2 viven ahora en `motor/consultas.py`. Se puede borrar cuando el grupo esté de acuerdo.
 
 ## Cómo se conectan las piezas
 
@@ -130,15 +130,15 @@ pruebas/               pruebas unitarias por requisito
 
 ## R7 — Agregar parada, quitar parada y recorrido
 
-**Archivo:** `motor/edicion.py`. El detalle está en [Readme_R7_R8.md](Readme_R7_R8.md).
+**Archivo:** `motor/edicion.py`. El detalle está en [README_R7_R8.md](README_R7_R8.md).
 
 - **Qué se usó:** una lista doblemente enlazada por ruta, en una tabla hash. Cada edición devuelve un registro que R9 guarda.
-- **Integración:** `Red` actualiza `rutas_por_estacion` y `buses_por_estacion` en cada edición, deshacer y rehacer.
+- **Integración:** `Red` actualiza `rutas_por_estacion` y `buses_por_estacion` en cada edición, deshacer y rehacer. Una parada nueva no tiene horarios en esa ruta, porque no se inventan datos, así que R4 responde `None` y no suma buses en R6. Si se vuelve a agregar una estación que ya estaba en la ruta, se recuperan sus horarios de `horarios.csv`.
 - **Big-O:** agregar, quitar y recorrido cuestan O(L), con L = paradas de la ruta. Revertir y rehacer cuestan O(1) más la actualización de índices, que es O(R_e) con R_e = rutas de esa estación.
 
 ## R8 — Cerrar y reabrir estaciones
 
-**Archivo:** `motor/estados.py`. El detalle está en [Readme_R7_R8.md](Readme_R7_R8.md).
+**Archivo:** `motor/estados.py`. El detalle está en [README_R7_R8.md](README_R7_R8.md).
 
 - **Qué se usó:** tabla hash de estados y AVL de abiertas. Cerrar saca la estación del AVL y reabrir la vuelve a meter.
 - **Big-O:** consultar cuesta O(1) esperado. Cerrar y reabrir cuestan O(log n), con n = estaciones abiertas.
@@ -214,7 +214,7 @@ Resultados en un portátil con Python 3.14 (factor al pasar de n a 2n):
 
 ## Pruebas
 
-En `pruebas/` hay 41 pruebas:
+En `pruebas/` hay 42 pruebas:
 
 - `test_r1_r2.py`: R1 y R2, con fuerza bruta para el autocompletar.
 - `test_r3_r4.py`: R3 y R4.
