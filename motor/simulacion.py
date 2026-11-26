@@ -3,6 +3,7 @@
 Los pasajeros llegan a la estación y hacen fila (cola FIFO). Cada bus sale a
 su hora, se suben hasta `cupo` pasajeros en orden de llegada y el resto
 sigue esperando el siguiente bus.
+0, 0, 1, 5 - 0, 2 , 4 - 2
 """
 import random
 from motor.estructuras import Cola
