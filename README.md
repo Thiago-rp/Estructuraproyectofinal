@@ -221,3 +221,25 @@ En `pruebas/` hay 42 pruebas:
 - `test_r5_r6.py`: R5 contra un óptimo de fuerza bruta y R6 contra ordenar todo.
 - `test_r7.py` y `test_r8.py`: R7 y R8.
 - `test_r9_r10.py`: pilas, colas, montículo, deshacer/rehacer mezclando los cuatro tipos de acción, y la simulación.
+
+# App Web de TransMilenio
+
+Se desarrolló la interfaz web con **Flask** (`web.py`) y **HTML/CSS/JS** (`templates/index.html`) sobre el `motor/` del proyecto, y desplegada en Render.
+
+🔗 **Link:** https://transmilenio-planner.onrender.com
+
+## Qué se construyó en la app web
+* **Diseño claro y limpio:** Se creó una interfaz web nueva con tema claro, acentos rojos, tarjetas ordenadas y sin saturación visual.
+* **Vista bajo demanda:** En el panel lateral solo aparecen las estaciones buscadas o las del viaje/rango calculado, junto con su estado (`ABIERTA` o `CERRADA`).
+* **Autocompletado inteligente:** Realiza sugerencias en tiempo real vinculadas al motor mientras se escribe, con navegación por teclado (`↑`, `↓`, `Enter`, `Esc`).
+* **Todas las funcionalidades (`R1` a `R10`):**
+  * **Viaje:** Cálculo de rutas directas o con 1 transbordo con detalle de tramos y paradas.
+  * **Estaciones:** Consulta de estado y rutas, búsqueda por rango y ranking diario de buses.
+  * **Operar:** Cierre/reapertura de estaciones y edición de paradas en una ruta.
+  * **Hora pico:** Consulta de próximo bus y simulación de filas de pasajeros.
+  * **Historial:** Cotones de **Deshacer** y **Rehacer** en la barra superior.
+
+## Archivos principales
+* `web.py`: Servidor Flask y endpoints REST (`/api/...`) conectados a `motor.Red`.
+* `templates/index.html`: Estructura HTML, estilos CSS y lógica JavaScript de la interfaz web.
+* `requirements.txt`: Dependencias (`flask` y `gunicorn`) para el despliegue.
