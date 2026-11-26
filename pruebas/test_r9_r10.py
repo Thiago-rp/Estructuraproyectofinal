@@ -98,6 +98,16 @@ class PruebasR9(unittest.TestCase):
         self.red.deshacer()
         self.assertIsNotNone(self.red.proximo_bus('RECINTO FERIAL', '1-1', '10:00'))
 
+    def test_volver_a_agregar_recupera_horarios(self):
+        buses = self.red.buses_por_estacion.obtener('RECINTO FERIAL')
+        self.red.quitar_parada('1-1', 'RECINTO FERIAL')
+        self.red.agregar_parada('1-1', 'UNIVERSIDADES', 'EL TIEMPO - MALOKA', 'RECINTO FERIAL')
+        self.assertEqual(self.red.proximo_bus('RECINTO FERIAL', '1-1', '10:00'), '10:08')
+        self.assertEqual(self.red.buses_por_estacion.obtener('RECINTO FERIAL'), buses)
+        # una parada que nunca estuvo en la ruta no tiene horarios
+        self.red.agregar_parada('1-1', 'UNIVERSIDADES', 'RECINTO FERIAL', 'AGUAS')
+        self.assertIsNone(self.red.proximo_bus('AGUAS', '1-1', '10:00'))
+
 
 class PruebasR10(unittest.TestCase):
     def test_fifo_y_cupo(self):
