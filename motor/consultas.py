@@ -66,5 +66,4 @@ def autocompletar(indice, prefijo, k):
             if obtener_clave_orden(salida[j]) > obtener_clave_orden(salida[j + 1]):
                 salida[j], salida[j + 1] = salida[j + 1], salida[j]
 
-    return salida[:k]raiz, normalizar(prefijo), k, salida)
-    return salida
+    return salida[:k]
